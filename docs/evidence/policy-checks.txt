@@ -1,0 +1,25 @@
+==> Rego tests
+
+15 tests, 15 passed, 0 warnings, 0 failures, 0 exceptions, 0 skipped
+
+==> Checkov (IAM)
+terraform scan results:
+
+Passed checks: 61, Failed checks: 0, Skipped checks: 0
+
+
+terraform scan results:
+
+Passed checks: 122, Failed checks: 0, Skipped checks: 0
+
+
+
+==> conftest
+
+160 tests, 160 passed, 0 warnings, 0 failures, 0 exceptions
+
+==> Canary (both must fail)
+ok: Checkov rejected it
+ok: conftest rejected it
+
+All checks passed.

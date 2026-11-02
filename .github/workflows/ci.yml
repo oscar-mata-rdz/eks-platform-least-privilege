@@ -1,0 +1,64 @@
+name: ci
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+env:
+  TF_VERSION: 1.16.6
+  TF_IN_AUTOMATION: "true"
+
+jobs:
+  validate:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v5
+      - uses: hashicorp/setup-terraform@v4
+        with:
+          terraform_version: ${{ env.TF_VERSION }}
+      - run: terraform fmt -check -recursive
+      - run: terraform -chdir=platform init -backend=false
+      - run: terraform -chdir=platform validate
+
+  iam-policy-gate:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v5
+      - run: scripts/check-policies.sh
+
+  plan:
+    runs-on: ubuntu-24.04
+    needs: validate
+    strategy:
+      matrix:
+        region: [us-east-1, us-west-2]
+    services:
+      localstack:
+        image: localstack/localstack:4.14.0
+        ports:
+          - 4566:4566
+        env:
+          SERVICES: sts,iam,s3,ec2,kms,logs,eks
+    steps:
+      - uses: actions/checkout@v5
+      - uses: hashicorp/setup-terraform@v4
+        with:
+          terraform_version: ${{ env.TF_VERSION }}
+          terraform_wrapper: false
+      - name: Wait for LocalStack
+        run: |
+          for i in $(seq 1 30); do
+            curl -sf http://localhost:4566/_localstack/health && exit 0
+            sleep 2
+          done
+          exit 1
+      - name: Plan ${{ matrix.region }}
+        run: |
+          . ./localstack.env
+          terraform -chdir=platform init
+          terraform -chdir=platform workspace select -or-create ${{ matrix.region }}
+          terraform -chdir=platform plan -no-color -var-file=envs/${{ matrix.region }}.tfvars

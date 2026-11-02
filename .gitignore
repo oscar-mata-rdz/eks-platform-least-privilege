@@ -1,0 +1,12 @@
+.terraform/
+*.tfstate
+*.tfstate.*
+terraform.tfstate.d/
+*.tfplan
+crash.log
+crash.*.log
+.env
+.DS_Store
+
+.idea/
+.vscode/

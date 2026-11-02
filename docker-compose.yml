@@ -1,0 +1,14 @@
+services:
+  localstack:
+    image: ${LOCALSTACK_IMAGE:-localstack/localstack:4.14.0}
+    container_name: clara-localstack
+    ports:
+      - "127.0.0.1:4566:4566"
+    environment:
+      SERVICES: sts,iam,s3,ec2,kms,logs,eks
+      LOCALSTACK_AUTH_TOKEN: ${LOCALSTACK_AUTH_TOKEN:-}
+    healthcheck:
+      test: ["CMD", "curl", "-sf", "http://localhost:4566/_localstack/health"]
+      interval: 5s
+      timeout: 3s
+      retries: 20

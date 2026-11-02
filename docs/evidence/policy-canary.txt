@@ -1,0 +1,47 @@
+$ conftest test --parser hcl2 --policy policy/opa policy/testdata/overly-permissive
+WARN - policy/testdata/overly-permissive/main.tf - main - deploy.<no sid>: "iam:PassRole" can escalate privileges, needs a second review.
+FAIL - policy/testdata/overly-permissive/main.tf - main - assume.<no sid>: trust policy must pin aws:RequestTag/eks-cluster-arn.
+FAIL - policy/testdata/overly-permissive/main.tf - main - assume.<no sid>: trust policy must pin aws:RequestTag/kubernetes-namespace.
+FAIL - policy/testdata/overly-permissive/main.tf - main - assume.<no sid>: trust policy must pin aws:RequestTag/kubernetes-service-account.
+FAIL - policy/testdata/overly-permissive/main.tf - main - aws_iam_role_policy.payments: policy must use aws_iam_policy_document.
+FAIL - policy/testdata/overly-permissive/main.tf - main - aws_iam_role_policy_attachment.payments_s3: arn:aws:iam::aws:policy/AmazonS3FullAccess not allowed.
+FAIL - policy/testdata/overly-permissive/main.tf - main - deploy.<no sid>: "eks:*" on "*", use a specific ARN.
+FAIL - policy/testdata/overly-permissive/main.tf - main - deploy.<no sid>: "iam:PassRole" on "*", use a specific ARN.
+FAIL - policy/testdata/overly-permissive/main.tf - main - deploy.<no sid>: wildcard action "eks:*".
+
+9 tests, 0 passed, 1 warning, 8 failures, 0 exceptions
+
+$ checkov --config-file .checkov.yaml -d policy/testdata/overly-permissive
+terraform scan results:
+
+Passed checks: 23, Failed checks: 7, Skipped checks: 0
+
+Check: CKV_AWS_109: "Ensure IAM policies does not allow permissions management / resource exposure without constraints"
+	FAILED for resource: aws_iam_policy_document.deploy
+	File: /main.tf:35-40
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-iam-policies/ensure-iam-policies-do-not-allow-permissions-management-resource-exposure-without-constraint
+Check: CKV_AWS_111: "Ensure IAM policies does not allow write access without constraints"
+	FAILED for resource: aws_iam_policy_document.deploy
+	File: /main.tf:35-40
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-iam-policies/ensure-iam-policies-do-not-allow-write-access-without-constraint
+Check: CKV_AWS_356: "Ensure no IAM policies documents allow "*" as a statement's resource for restrictable actions"
+	FAILED for resource: aws_iam_policy_document.deploy
+	File: /main.tf:35-40
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-iam-policies/bc-aws-356
+Check: CKV_AWS_289: "Ensure IAM policies does not allow permissions management / resource exposure without constraints"
+	FAILED for resource: aws_iam_role_policy.payments
+	File: /main.tf:17-28
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-iam-policies/bc-aws-289
+Check: CKV_AWS_355: "Ensure no IAM policies documents allow "*" as a statement's resource for restrictable actions"
+	FAILED for resource: aws_iam_role_policy.payments
+	File: /main.tf:17-28
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-iam-policies/bc-aws-355
+Check: CKV_AWS_288: "Ensure IAM policies does not allow data exfiltration"
+	FAILED for resource: aws_iam_role_policy.payments
+	File: /main.tf:17-28
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-iam-policies/bc-aws-288
+Check: CKV_AWS_290: "Ensure IAM policies does not allow write access without constraints"
+	FAILED for resource: aws_iam_role_policy.payments
+	File: /main.tf:17-28
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-iam-policies/bc-aws-290
+
