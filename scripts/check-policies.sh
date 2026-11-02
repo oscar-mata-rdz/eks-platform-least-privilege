@@ -45,8 +45,8 @@ echo "ok: conftest rejected it"
 if [[ "${1:-}" == "--full" ]]; then
   echo
   echo "==> Full Checkov report (informational)"
-  docker run --rm -v "$ROOT":/src -w /src "$CHECKOV_IMAGE" \
-    -d modules --framework terraform --compact --quiet --soft-fail
+  docker run --rm -v "$ROOT/modules":/src -w /src "$CHECKOV_IMAGE" \
+    -d . --framework terraform --compact --quiet --soft-fail
 fi
 
 echo

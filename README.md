@@ -30,7 +30,7 @@ with the lock file committed, and Docker 28. LocalStack is pinned to 4.14.0 in
 Why 4.14.0: newer LocalStack images won't start without an auth token, and this
 is the last community one that does. Community doesn't include EKS, but `init`,
 `validate` and `plan` never call the EKS API, so that's enough here. An `apply`
-would get through VPC, IAM, KMS and S3 and then fail on the cluster.
+can't finish without EKS, so I stopped at `plan`.
 
 ```bash
 docker compose up -d --wait        # start LocalStack
@@ -250,7 +250,7 @@ region against LocalStack.
 - [`policy-checks.txt`](docs/evidence/policy-checks.txt): gate passing
 - [`policy-canary.txt`](docs/evidence/policy-canary.txt): gate rejecting the bad fixture
 
-`make evidence` regenerates them.
+`make evidence` regenerates the plans and `policy-checks.txt`.
 
 ## On a real account, and with more time
 

@@ -11,7 +11,7 @@ vpc_cidr           = "10.10.0.0/16"
 az_count           = 3
 single_nat_gateway = false
 
-kubernetes_version     = "1.34"
+kubernetes_version     = "1.37"
 endpoint_public_access = true
 public_access_cidrs    = ["203.0.113.0/24"]
 

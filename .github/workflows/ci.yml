@@ -51,7 +51,7 @@ jobs:
           terraform_wrapper: false
       - name: Wait for LocalStack
         run: |
-          for i in $(seq 1 30); do
+          for _ in $(seq 1 30); do
             curl -sf http://localhost:4566/_localstack/health && exit 0
             sleep 2
           done
